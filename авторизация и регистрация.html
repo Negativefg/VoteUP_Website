@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Регистрация и авторизация на PHP (PDO + MySQL)</title>
+</head>
+<body>
+    <h1>Методический материал: Регистрация и авторизация на PHP с использованием PDO и MySQL</h1>
+
+    <p>
+        В данном материале показано, как организовать <b>регистрацию и авторизацию пользователей</b>
+        с использованием <b>PDO</b>, <b>MySQL</b>, <b>сессий</b> и <b>хэширования паролей</b>.
+        Проект разделён на две части: <b>HTML формы</b> (frontend) и <b>PHP обработчики</b> (backend).
+    </p>
+
+    <h2>1. Структура проекта</h2>
+<pre>
+project/
+│
+├── config.php        # Подключение к БД и запуск сессии
+├── register.html     # Форма регистрации (HTML)
+├── login.html        # Форма входа (HTML)
+├── register.php      # Обработка регистрации
+├── login.php         # Обработка входа
+├── profile.php       # Личный кабинет (защищённая страница)
+├── logout.php        # Выход
+├── index.php         # Главная
+└── db.sql            # SQL для базы
+</pre>
+
+    <h2>2. Создание базы данных</h2>
+<pre>
+CREATE DATABASE user_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE user_system;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+</pre>
+
+    <h2>3. Подключение к базе и запуск сессий (config.php)</h2>
+<pre>
+&lt;?php
+$host = "localhost";
+$dbname = "user_system";
+$user = "root";
+$pass = "";
+
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $user, $pass);
+    $pdo-&gt;setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Ошибка подключения: " . $e-&gt;getMessage());
+}
+
+session_start(); // Запуск сессии
+?&gt;
+</pre>
+
+    <h2>4. HTML форма регистрации (register.html)</h2>
+<pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Регистрация&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;Регистрация&lt;/h2&gt;
+&lt;form method="post" action="register.php"&gt;
+    Логин: &lt;input type="text" name="username"&gt;&lt;br&gt;&lt;br&gt;
+    Пароль: &lt;input type="password" name="password"&gt;&lt;br&gt;&lt;br&gt;
+    &lt;input type="submit" value="Зарегистрироваться"&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+    <h2>5. Обработка регистрации (register.php)</h2>
+<pre>
+&lt;?php
+require "config.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
+
+    if (!empty($username) && !empty($password)) {
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $stmt = $pdo-&gt;prepare("SELECT id FROM users WHERE username = ?");
+        $stmt-&gt;execute([$username]);
+
+        if ($stmt-&gt;rowCount() &gt; 0) {
+            echo "Пользователь с таким логином уже существует.";
+            echo "&lt;br&gt;&lt;a href='register.html'&gt;Назад&lt;/a&gt;";
+        } else {
+            $stmt = $pdo-&gt;prepare("INSERT INTO users (username, password) VALUES (?, ?)");
+            if ($stmt-&gt;execute([$username, $hashedPassword])) {
+                echo "Регистрация успешна! &lt;a href='login.html'&gt;Войти&lt;/a&gt;";
+            } else {
+                echo "Ошибка при регистрации.";
+            }
+        }
+    } else {
+        echo "Заполните все поля! &lt;a href='register.html'&gt;Назад&lt;/a&gt;";
+    }
+}
+?&gt;
+</pre>
+
+    <h2>6. HTML форма авторизации (login.html)</h2>
+<pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Авторизация&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;Авторизация&lt;/h2&gt;
+&lt;form method="post" action="login.php"&gt;
+    Логин: &lt;input type="text" name="username"&gt;&lt;br&gt;&lt;br&gt;
+    Пароль: &lt;input type="password" name="password"&gt;&lt;br&gt;&lt;br&gt;
+    &lt;input type="submit" value="Войти"&gt;
+&lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+    <h2>7. Обработка авторизации (login.php)</h2>
+<pre>
+&lt;?php
+require "config.php";
+
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
+
+    $stmt = $pdo-&gt;prepare("SELECT * FROM users WHERE username = ?");
+    $stmt-&gt;execute([$username]);
+    $user = $stmt-&gt;fetch(PDO::FETCH_ASSOC);
+
+    if ($user && password_verify($password, $user["password"])) {
+        $_SESSION["user_id"] = $user["id"];
+        $_SESSION["username"] = $user["username"];
+        header("Location: profile.php");
+        exit;
+    } else {
+        echo "Неверный логин или пароль!";
+        echo "&lt;br&gt;&lt;a href='login.html'&gt;Назад&lt;/a&gt;";
+    }
+}
+?&gt;
+</pre>
+
+    <h2>8. Личный кабинет (profile.php)</h2>
+<pre>
+&lt;?php
+require "config.php";
+
+if (!isset($_SESSION["user_id"])) {
+    header("Location: login.html");
+    exit;
+}
+?&gt;
+
+&lt;h2&gt;Привет, &lt;?= htmlspecialchars($_SESSION["username"]) ?&gt;!&lt;/h2&gt;
+&lt;p&gt;Это защищённая страница (личный кабинет).&lt;/p&gt;
+&lt;a href="logout.php"&gt;Выйти&lt;/a&gt;
+</pre>
+
+    <h2>9. Выход (logout.php)</h2>
+<pre>
+&lt;?php
+require "config.php";
+session_destroy();
+header("Location: index.php");
+exit;
+?&gt;
+</pre>
+
+    <h2>10. Главная (index.php)</h2>
+<pre>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Главная&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h2&gt;Главная страница&lt;/h2&gt;
+&lt;a href="register.html"&gt;Регистрация&lt;/a&gt; | 
+&lt;a href="login.html"&gt;Вход&lt;/a&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+
+    <h2>11. Как это работает</h2>
+    <ul>
+        <li><b>Регистрация:</b> пользователь заполняет форму → пароль хэшируется → сохраняется в базе.</li>
+        <li><b>Авторизация:</b> пользователь вводит данные → PHP проверяет пароль через <code>password_verify()</code> → создаётся сессия.</li>
+        <li><b>Сессия:</b> хранит ID и логин → защищённые страницы проверяют <code>$_SESSION</code>.</li>
+        <li><b>Выход:</b> уничтожает сессию → пользователь больше не авторизован.</li>
+    </ul>
+
+</body>
+</html>
