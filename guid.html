@@ -1,0 +1,883 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/javascript.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h1 {
+            text-align: center;
+            color: #2980b9;
+        }
+        .toc {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .toc ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        .toc li {
+            margin: 10px 0;
+        }
+        .toc a {
+            text-decoration: none;
+            color: #2980b9;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .toc a:hover {
+            color: #e74c3c;
+            text-decoration: underline;
+        }
+        .content-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        pre {
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        code {
+            font-family: 'Fira Code', monospace;
+        }
+        .note {
+            background-color: #e7f5fe;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning {
+            background-color: #fdecea;
+            border-left: 4px solid #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .example {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .code-container {
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #555;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        .copy-btn:hover {
+            opacity: 1;
+        }
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .back-to-top:hover {
+            background-color: #2980b9;
+        }
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .content-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Комплексный гайд по работе с формами PHP, HTML</h1>
+    
+    <div class="toc">
+        <h2>Оглавление</h2>
+        <ul>
+            <li><a href="#основы">1. Основы передачи данных</a></li>
+            <li><a href="#суперглобальные-массивы">2. Суперглобальные массивы</a></li>
+            <li><a href="#html-формы">3. HTML-формы и элементы ввода</a></li>
+            <li><a href="#обработка-данных">4. Обработка данных на сервере</a></li>
+            <li><a href="#динамические-поля">5. Динамическое количество полей</a></li>
+            <li><a href="#безопасность">6. Безопасность и валидация</a></li>
+            <li><a href="#примеры">7. Практические примеры</a></li>
+            <li><a href="#дополнительно">8. Дополнительные возможности</a></li>
+        </ul>
+    </div>
+
+    <div id="основы" class="content-section">
+        <h2>1. Основы передачи данных</h2>
+        <h3>Методы передачи данных</h3>
+        
+        <h4>GET метод</h4>
+        <ul>
+            <li>Данные передаются через URL</li>
+            <li>Видимы для пользователя</li>
+            <li>Ограничение на длину (обычно 2048 символов)</li>
+            <li>Кэшируется браузером</li>
+            <li>Используется для получения данных</li>
+        </ul>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;form method="GET" action="process.php"&gt;
+    &lt;input type="text" name="search"&gt;
+    &lt;input type="submit" value="Поиск"&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+        <p>При отправке: process.php?search=запрос</p>
+        
+        <h4>POST метод</h4>
+        <ul>
+            <li>Данные передаются в теле запроса</li>
+            <li>Не видимы в URL</li>
+            <li>Нет ограничений на длину</li>
+            <li>Не кэшируется</li>
+            <li>Используется для отправки данных</li>
+        </ul>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;form method="POST" action="process.php"&gt;
+    &lt;input type="text" name="username"&gt;
+    &lt;input type="submit" value="Отправить"&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+    </div>
+
+    <div id="суперглобальные-массивы" class="content-section">
+        <h2>2. Суперглобальные массивы</h2>
+        
+        <h3>$_GET</h3>
+        <p>Содержит все переменные, переданные через GET-запрос (параметры URL).</p>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">// URL: process.php?name=John&age=25
+$name = $_GET['name']; // "John"
+$age = $_GET['age'];   // "25"</code></pre>
+        </div>
+        
+        <h3>$_POST</h3>
+        <p>Содержит все переменные, переданные через POST-запрос (тело запроса).</p>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">// Форма с полями: username, email
+$username = $_POST['username']; // Значение из поля username
+$email = $_POST['email'];       // Значение из поля email</code></pre>
+        </div>
+        
+        <h3>$_FILES</h3>
+        <p>Содержит информацию о загруженных файлах.</p>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">// Поле для загрузки файла: &lt;input type="file" name="avatar"&gt;
+$fileInfo = $_FILES['avatar'];
+/*
+Array
+(
+    [name] => photo.jpg          // Имя файла
+    [type] => image/jpeg         // MIME-тип
+    [tmp_name] => /tmp/phpXZY    // Временный путь
+    [error] => 0                 // Код ошибки
+    [size] => 102400             // Размер в байтах
+)
+*/</code></pre>
+        </div>
+        
+        <h3>$_REQUEST</h3>
+        <p>Содержит данные из GET, POST и COOKIE (не рекомендуется для использования из-за безопасности).</p>
+        
+        <h3>$_SERVER</h3>
+        <p>Содержит информацию о сервере и текущем запросе.</p>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">// Проверка метода запроса
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Обрабатываем POST-запрос
+}
+
+// Другие полезные элементы $_SERVER:
+$userAgent = $_SERVER['HTTP_USER_AGENT']; // Информация о браузере
+$clientIP = $_SERVER['REMOTE_ADDR'];      // IP-адрес клиента
+$scriptPath = $_SERVER['SCRIPT_NAME'];    // Путь к текущему скрипту</code></pre>
+        </div>
+    </div>
+
+    <div id="html-формы" class="content-section">
+        <h2>3. HTML-формы и элементы ввода</h2>
+        <h3>Основные элементы формы</h3>
+        
+        <h4>Текстовые поля</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;input type="text" name="username"&gt;        &lt;!-- Однострочный текст --&gt;
+&lt;input type="password" name="password"&gt;    &lt;!-- Пароль --&gt;
+&lt;input type="email" name="email"&gt;          &lt;!-- Email --&gt;
+&lt;input type="number" name="age"&gt;           &lt;!-- Число --&gt;
+&lt;textarea name="message"&gt;&lt;/textarea&gt;       &lt;!-- Многострочный текст --&gt;</code></pre>
+        </div>
+        
+        <h4>Выбор вариантов</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;!-- Одиночный выбор --&gt;
+&lt;input type="radio" name="gender" value="male"&gt; Мужской
+&lt;input type="radio" name="gender" value="female"&gt; Женский
+
+&lt;!-- Множественный выбор (обратите внимание на []) --&gt;
+&lt;input type="checkbox" name="interests[]" value="sports"&gt; Спорт
+&lt;input type="checkbox" name="interests[]" value="music"&gt; Музыка
+
+&lt;!-- Выпадающий список --&gt;
+&lt;select name="country"&gt;
+    &lt;option value="ru"&gt;Россия&lt;/option&gt;
+    &lt;option value="us"&gt;США&lt;/option&gt;
+&lt;/select&gt;
+
+&lt;!-- Множественный выбор в списке --&gt;
+&lt;select name="languages[]" multiple&gt;
+    &lt;option value="php"&gt;PHP&lt;/option&gt;
+    &lt;option value="js"&gt;JavaScript&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+        </div>
+        
+        <h4>Специальные поля</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;input type="file" name="avatar"&gt;          &lt;!-- Загрузка файлов --&gt;
+&lt;input type="hidden" name="token" value="secret123"&gt; &lt;!-- Скрытое поле --&gt;
+&lt;input type="date" name="birthdate"&gt;       &lt;!-- Дата --&gt;
+&lt;input type="color" name="favcolor"&gt;       &lt;!-- Цвет --&gt;
+&lt;input type="range" name="volume"&gt;         &lt;!-- Ползунок --&gt;</code></pre>
+        </div>
+    </div>
+
+    <div id="обработка-данных" class="content-section">
+        <h2>4. Обработка данных на сервере</h2>
+        
+        <h3>Проверка метода запроса</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">// Всегда проверяйте метод запроса перед обработкой
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Обрабатываем POST-данные
+    processForm();
+} elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    // Обрабатываем GET-данные
+    showForm();
+}</code></pre>
+        </div>
+        
+        <h3>Обработка различных типов полей</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+// Текстовые поля (используем null coalescing operator ??)
+$username = $_POST['username'] ?? '';          // Пустая строка если не установлено
+$password = $_POST['password'] ?? '';
+
+// Радиокнопки (одиночный выбор)
+$gender = $_POST['gender'] ?? '';              // Пустая строка если не выбран
+
+// Чекбоксы (множественный выбор)
+$interests = $_POST['interests'] ?? [];        // Пустой массив если не выбрано
+if (!is_array($interests)) {
+    $interests = [];                           // Защита от модификации данных
+}
+
+// Выпадающий список
+$country = $_POST['country'] ?? '';
+
+// Файлы
+$avatar = $_FILES['avatar'] ?? null;           // null если файл не загружен</code></pre>
+        </div>
+        
+        <h3>Пример полной обработки формы</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+// Проверяем, что форма отправлена методом POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+    // Обработка текстовых полей с санитизацией
+    $name = trim(htmlspecialchars($_POST['name'] ?? ''));
+    $email = trim(htmlspecialchars($_POST['email'] ?? ''));
+    
+    // Обработка чекбокса (true/false)
+    $newsletter = isset($_POST['newsletter']); // true если отмечен
+    
+    // Обработка множественного выбора
+    $selectedColors = $_POST['colors'] ?? [];
+    if (!is_array($selectedColors)) {
+        $selectedColors = []; // Защита от подделки данных
+    }
+    
+    // Валидация
+    $errors = [];
+    if (empty($name)) $errors[] = 'Имя обязательно';
+    if (empty($email)) $errors[] = 'Email обязателен';
+    
+    if (empty($errors)) {
+        // Сохранение данных или дальнейшая обработка/если нет никаких ошибок
+        echo "Имя: $name&lt;br&gt;";
+        echo "Email: $email&lt;br&gt;";
+        echo "Подписка: " . ($newsletter ? 'да' : 'нет') . "&lt;br&gt;";
+        echo "Цвета: " . implode(', ', $selectedColors);
+    } else {
+        foreach ($errors as $error) {
+            echo "&lt;div class='error'&gt;$error&lt;/div&gt;";
+        }
+    }
+}</code></pre>
+        </div>
+    </div>
+
+    <div id="динамические-поля" class="content-section">
+        <h2>5. Динамическое количество полей</h2>
+        <h3>Передача массивов данных</h3>
+        
+        <h4>HTML-сторона с JavaScript</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;form method="POST" action="process.php"&gt;
+    &lt;div id="users"&gt;
+        &lt;div class="user"&gt;
+            &lt;input type="text" name="users[0][name]" placeholder="Имя"&gt;
+            &lt;input type="email" name="users[0][email]" placeholder="Email"&gt;
+        &lt;/div&gt;
+        &lt;div class="user"&gt;
+            &lt;input type="text" name="users[1][name]" placeholder="Имя"&gt;
+            &lt;input type="email" name="users[1][email]" placeholder="Email"&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;button type="button" onclick="addUser()"&gt;Добавить пользователя&lt;/button&gt;
+    &lt;input type="submit" value="Отправить"&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+let userCount = 2;
+function addUser() {
+    const usersDiv = document.getElementById('users');
+    const newUser = document.createElement('div');
+    newUser.className = 'user';
+    newUser.innerHTML = `
+        &lt;input type="text" name="users[${userCount}][name]" placeholder="Имя"&gt;
+        &lt;input type="email" name="users[${userCount}][email]" placeholder="Email"&gt;
+    `;
+    usersDiv.appendChild(newUser);
+    userCount++;
+}
+&lt;/script&gt;</code></pre>
+        </div>
+        
+        <h4>PHP-обработка динамических данных</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $users = $_POST['users'] ?? [];
+    
+    // $_POST['users'] будет содержать:
+    /*
+    Array
+    (
+        [0] => Array
+            (
+                [name] => 'Иван'
+                [email] => 'ivan@mail.ru'
+            )
+        [1] => Array
+            (
+                [name] => 'Мария'
+                [email] => 'maria@yandex.ru'
+            )
+    )
+    */
+    
+    foreach ($users as $index => $userData) {
+        $name = trim($userData['name'] ?? '');
+        $email = trim($userData['email'] ?? '');
+        
+        if (!empty($name) && !empty($email)) {
+            echo "Пользователь $index: $name ($email)&lt;br&gt;";
+            // Сохранение в базу данных
+        }
+    }
+}</code></pre>
+        </div>
+        
+        <h3>Альтернативный подход с простыми массивами</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;!-- Простая нумерация через [] --&gt;
+&lt;input type="text" name="emails[]" placeholder="Email 1"&gt;
+&lt;input type="text" name="emails[]" placeholder="Email 2"&gt;
+&lt;input type="text" name="emails[]" placeholder="Email 3"&gt;</code></pre>
+        </div>
+        
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+// $_POST['emails'] будет массивом:
+/*
+Array
+(
+    [0] => 'email1@example.com'
+    [1] => 'email2@example.com'
+    [2] => 'email3@example.com'
+)
+*/
+
+$emails = $_POST['emails'] ?? [];
+foreach ($emails as $index => $email) {
+    $email = trim($email);
+    if (!empty($email)) {
+        echo "Email $index: $email&lt;br&gt;";
+    }
+}</code></pre>
+        </div>
+    </div>
+
+    <div id="безопасность" class="content-section">
+        <h2>6. Безопасность и валидация</h2>
+        <h3>Валидация данных</h3>
+        
+        <h4>Использование filter_var()</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+// Валидация email
+$email = "user@example.com";
+if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    echo "Valid email";
+} else {
+    echo "Invalid email";
+}
+
+// Валидация URL
+$url = "https://example.com";
+if (filter_var($url, FILTER_VALIDATE_URL)) {
+    echo "Valid URL";
+}
+
+// Санитизация данных
+$dirty = "&lt;script&gt;alert('xss')&lt;/script&gt;";
+$clean = filter_var($dirty, FILTER_SANITIZE_STRING);
+echo $clean; // "alert('xss')"</code></pre>
+        </div>
+        
+        <h4>Кастомные функции валидации</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+function validateEmail($email) {
+    return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+function validateName($name) {
+    // Только буквы, пробелы и дефисы, 2-50 символов
+    return preg_match('/^[a-zA-Zа-яА-ЯёЁ\s\-]{2,50}$/u', $name);
+}
+
+function sanitizeInput($input) {
+    return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
+}</code></pre>
+        </div>
+        
+        <h3>Полная обработка с валидацией</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+$errors = [];
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name = sanitizeInput($_POST['name'] ?? '');
+    $email = sanitizeInput($_POST['email'] ?? '');
+    $age = (int)($_POST['age'] ?? 0);
+    
+    // Валидация
+    if (empty($name)) {
+        $errors[] = 'Имя обязательно для заполнения';
+    } elseif (!validateName($name)) {
+        $errors[] = 'Некорректное имя (только буквы, 2-50 символов)';
+    }
+    
+    if (empty($email)) {
+        $errors[] = 'Email обязателен для заполнения';
+    } elseif (!validateEmail($email)) {
+        $errors[] = 'Некорректный email';
+    }
+    
+    if ($age < 1 || $age > 150) {
+        $errors[] = 'Некорректный возраст';
+    }
+    
+    // Если ошибок нет - обрабатываем данные
+    if (empty($errors)) {
+        // Безопасная работа с базой данных используя подготовленные выражения
+        $stmt = $pdo->prepare("INSERT INTO users (name, email, age) VALUES (?, ?, ?)");
+        $stmt->execute([$name, $email, $age]);
+        
+        echo "Данные успешно сохранены!";
+    } else {
+        foreach ($errors as $error) {
+            echo "&lt;div class='error'&gt;$error&lt;/div&gt;";
+        }
+    }
+}</code></pre>
+        </div>
+        
+        <h3>Защита от CSRF</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+session_start();
+
+// Генерация CSRF токена
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
+// В форме
+echo '&lt;input type="hidden" name="csrf_token" value="' . $_SESSION['csrf_token'] . '"&gt;';
+
+// Проверка при обработке
+if ($_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+    die('Недействительный CSRF токен');
+}</code></pre>
+        </div>
+    </div>
+
+    <div id="примеры" class="content-section">
+        <h2>7. Практические примеры</h2>
+        
+        <h3>Пример 1: Контактная форма с валидацией</h3>
+        <h4>HTML</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-html">&lt;form method="POST" action="contact.php"&gt;
+    &lt;input type="text" name="name" required placeholder="Ваше имя"&gt;
+    &lt;input type="email" name="email" required placeholder="Ваш email"&gt;
+    &lt;select name="subject" required&gt;
+        &lt;option value=""&gt;Выберите тему&lt;/option&gt;
+        &lt;option value="question"&gt;Вопрос&lt;/option&gt;
+        &lt;option value="support"&gt;Техподдержка&lt;/option&gt;
+    &lt;/select&gt;
+    &lt;textarea name="message" required placeholder="Сообщение"&gt;&lt;/textarea&gt;
+    &lt;input type="checkbox" name="agree" required&gt; Согласен с обработкой данных
+    &lt;input type="submit" value="Отправить"&gt;
+&lt;/form&gt;</code></pre>
+        </div>
+        
+        <h4>PHP обработчик</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Получаем и очищаем данные
+    $name = htmlspecialchars(trim($_POST['name'] ?? ''));
+    $email = htmlspecialchars(trim($_POST['email'] ?? ''));
+    $subject = htmlspecialchars(trim($_POST['subject'] ?? ''));
+    $message = htmlspecialchars(trim($_POST['message'] ?? ''));
+    $agree = isset($_POST['agree']);
+    
+    // Валидация
+    $errors = [];
+    
+    if (empty($name)) $errors[] = 'Введите имя';
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $errors[] = 'Введите корректный email';
+    }
+    if (empty($subject)) $errors[] = 'Выберите тему';
+    if (empty($message)) $errors[] = 'Введите сообщение';
+    if (!$agree) $errors[] = 'Необходимо согласие';
+    
+    if (empty($errors)) {
+        // Отправка email
+        $to = 'admin@example.com';
+        $headers = "From: $email\r\n";
+        $headers .= "Content-Type: text/plain; charset=utf-8\r\n";
+        
+        $emailBody = "Имя: $name\nEmail: $email\nТема: $subject\n\nСообщение:\n$message";
+        
+        if (mail($to, "Новое сообщение: $subject", $emailBody, $headers)) {
+            echo 'Сообщение отправлено успешно!';
+        } else {
+            echo 'Ошибка при отправке сообщения';
+        }
+    } else {
+        foreach ($errors as $error) {
+            echo "&lt;p style='color: red;'&gt;$error&lt;/p&gt;";
+        }
+    }
+}</code></pre>
+        </div>
+        
+        <h3>Пример 2: Форма заказа товаров</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+// Обработка динамических товаров в корзине
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $products = $_POST['products'] ?? [];
+    $total = 0;
+    
+    /*
+    $_POST['products'] будет содержать:
+    Array
+    (
+        [123] => Array( [quantity] => 2, [price] => 1000 )
+        [456] => Array( [quantity] => 1, [price] => 500 )
+    )
+    */
+    
+    foreach ($products as $productId => $productData) {
+        $quantity = (int)($productData['quantity'] ?? 0);
+        $price = (float)($productData['price'] ?? 0);
+        
+        if ($quantity > 0 && $price > 0) {
+            $subtotal = $quantity * $price;
+            $total += $subtotal;
+            
+            echo "Товар ID: $productId, Количество: $quantity, ";
+            echo "Цена: $price, Сумма: $subtotal&lt;br&gt;";
+        }
+    }
+    
+    echo "Итого: $total руб.";
+}</code></pre>
+        </div>
+    </div>
+
+    <div id="дополнительно" class="content-section">
+        <h2>8. Дополнительные возможности</h2>
+        
+        <h3>Загрузка файлов с валидацией</h3>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['file'])) {
+    $file = $_FILES['file'];
+    
+    // Проверки
+    $allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+    $maxSize = 5 * 1024 * 1024; // 5MB
+    
+    // Коды ошибок UPLOAD_ERR_XXX
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        switch ($file['error']) {
+            case UPLOAD_ERR_INI_SIZE:
+            case UPLOAD_ERR_FORM_SIZE:
+                echo 'Файл слишком большой';
+                break;
+            case UPLOAD_ERR_PARTIAL:
+                echo 'Файл загружен частично';
+                break;
+            case UPLOAD_ERR_NO_FILE:
+                echo 'Файл не был загружен';
+                break;
+            default:
+                echo 'Ошибка загрузки файла';
+        }
+    } elseif (!in_array($file['type'], $allowedTypes)) {
+        echo 'Недопустимый тип файла. Разрешены: JPEG, PNG, PDF';
+    } elseif ($file['size'] > $maxSize) {
+        echo 'Файл слишком большой. Максимум: 5MB';
+    } else {
+        // Безопасное имя файла
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = uniqid() . '.' . $extension;
+        $uploadDir = 'uploads/';
+        $destination = $uploadDir . $filename;
+        
+        // Проверяем директорию
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+        
+        if (move_uploaded_file($file['tmp_name'], $destination)) {
+            echo 'Файл успешно загружен: ' . $filename;
+        } else {
+            echo 'Ошибка при сохранении файла';
+        }
+    }
+}</code></pre>
+        </div>
+        
+        <h3>AJAX обработка форм</h3>
+        <h4>JavaScript</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-javascript">document.getElementById('myForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    
+    fetch('process.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Успешно!');
+            this.reset();
+        } else {
+            alert('Ошибки: ' + data.errors.join(', '));
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});</code></pre>
+        </div>
+        
+        <h4>PHP для AJAX обработки</h4>
+        <div class="code-container">
+            <button class="copy-btn" onclick="copyCode(this)">Копировать</button>
+            <pre><code class="language-php">&lt;?php
+// Устанавливаем заголовок для JSON ответа
+header('Content-Type: application/json');
+
+$response = ['success' => false, 'errors' => []];
+
+// Проверяем AJAX запрос
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && 
+    !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+    strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    
+    // Обработка данных
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    
+    // Валидация
+    if (empty($name)) {
+        $response['errors'][] = 'Имя обязательно';
+    }
+    
+    if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $response['errors'][] = 'Некорректный email';
+    }
+    
+    if (empty($response['errors'])) {
+        // Сохранение данных
+        // ... код сохранения ...
+        
+        $response['success'] = true;
+        $response['message'] = 'Данные успешно сохранены';
+    }
+} else {
+    $response['errors'][] = 'Неверный запрос';
+}
+
+echo json_encode($response, JSON_UNESCAPED_UNICODE);</code></pre>
+        </div>
+        
+        <h3>Заключение</h3>
+        <p>Работа с формами в PHP - фундаментальный навык для веб-разработчика. Ключевые моменты:</p>
+        <ul>
+            <li>Всегда проверяйте метод запроса через $_SERVER['REQUEST_METHOD']</li>
+            <li>Используйте соответствующие суперглобальные массивы: $_GET, $_POST, $_FILES</li>
+            <li>Валидируйте и фильтруйте все входящие данные</li>
+            <li>Для динамических полей используйте массивы в именах input'ов</li>
+            <li>Защищайтесь от CSRF и других атак</li>
+            <li>Используйте подготовленные выражения для работы с БД</li>
+            <li>Предусматривайте обработку ошибок и пользовательский feedback</li>
+        </ul>
+    </div>
+
+    <button class="back-to-top" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // Функция для копирования кода
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const textArea = document.createElement('textarea');
+            textArea.value = codeBlock.textContent;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            
+            // Визуальное подтверждение копирования
+            const originalText = button.textContent;
+            button.textContent = 'Скопировано!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+        
+        // Кнопка "Наверх"
+        window.onscroll = function() {
+            const backToTopButton = document.querySelector('.back-to-top');
+            if (document.body.scrollTop > 200 || document.documentElement.scrollTop > 200) {
+                backToTopButton.style.display = 'block';
+            } else {
+                backToTopButton.style.display = 'none';
+            }
+        };
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Подсветка кода
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+        });
+    </script>
+</body>
+</html>
